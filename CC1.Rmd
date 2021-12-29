@@ -7,7 +7,6 @@ output: github_document
 
 # CC1 Chloé GAUTIER
 
-
 ```{r}
 library("knitr")
 library("BiocStyle")
