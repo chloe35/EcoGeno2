@@ -1,0 +1,49 @@
+---
+title: "CC2"
+author: "Chloé"
+date: "29/12/2021"
+output: github_document
+---
+
+# CC2 Chloé GAUTIER
+
+## Comparaison des profils du microbiome buccal chez les nourrissons de 18 mois et leurs parents
+
+```{r}
+library("knitr")
+library("BiocStyle")
+.cran_packages <- c("ggplot2", "gridExtra", "devtools")
+
+.bioc_packages <- c("dada2", "phyloseq", "DECIPHER", "phangorn")
+sapply(c(.cran_packages, .bioc_packages), require, character.only = TRUE)
+
+.cran_packages <- c( "shiny","miniUI", "caret", "pls", "e1071", "ggplot2", "randomForest", "dplyr", "ggrepel", "nlme", "devtools",
+                  "reshape2", "PMA", "structSSI", "ade4",
+                  "ggnetwork", "intergraph", "scales")
+.github_packages <- c("jfukuyama/phyloseqGraphTest")
+.bioc_packages <- c("genefilter", "impute")
+
+library(dada2)
+packageVersion("dada2")
+```
+```{r}
+miseq_path <- "/home/rstudio/EG2/EcoGe2/DA"
+list.files(miseq_path)
+```
+```{r}
+# Sort ensures forward/reverse reads are in same order
+fnFs <- sort(list.files(miseq_path, pattern="_R1_001.fastq")) 
+fnRs <- sort(list.files(miseq_path, pattern="_R2_001.fastq"))
+```
+
+```{r}
+# Extract sample names, assuming filenames have format: SAMPLENAME_XXX.fastq
+sampleNames <- sapply(strsplit(fnFs, "_"), `[`, 1)
+```
+
+```{r}
+# Specify the full path to the fnFs and fnRs
+fnFs <- file.path(miseq_path, fnFs)
+fnRs <- file.path(miseq_path, fnRs)
+fnFs[1:3]
+```
