@@ -7,6 +7,7 @@ output: github_document
 
 # CC2 Chloé GAUTIER
 
+
 ## Comparaison des profils du microbiome buccal chez les nourrissons de 18 mois et leurs parents
 
 
@@ -135,7 +136,6 @@ head(mergers[[1]])
 seqtabAll <- makeSequenceTable(mergers)
 dim(seqtabAll)
 ```
-## Le résultat affiche <table of extent 0> malgré de nombreux essais pour changer cela, je n'ai pas trouvé le problème pour résoudre cette erreur. N'ayant pas de résultats pour cette commande, je ne peux pas exécuter les suivantes contenant "seqtabNoC" et bloquant ainsi toutes les autre commandes.  
 
 ```{r}
 table(nchar(getSequences(seqtabAll)))
@@ -144,7 +144,7 @@ table(nchar(getSequences(seqtabAll)))
 ## Supprimer les chimères
 
 ```{r}
-#seqtabNoC <- removeBimeraDenovo(seqtabAll)
+seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
 ```{r}
@@ -152,28 +152,28 @@ table(nchar(getSequences(seqtabAll)))
 ```
 
 ```{r}
-#fastaRef <- read.csv(file = "Métadonnées.csv")
-#taxTab<-assignTaxonomy(seqtabNoC, refFasta=fastaRef, multithread=TRUE)
+fastaRef <- read.csv(file = "Métadonnées.csv")
+taxTab<-assignTaxonomy(seqtabNoC, refFasta=fastaRef, multithread=TRUE)
 #unname(head(taxTab))
 ```
 
 ## Construire un arbre phylogénétique 
 
 ```{r}
-#seqs <- getSequences(seqtabNoC)
-#names(seqs) <- seqs # This propagates to the tip labels of the tree
-#alignment <- AlignSeqs(DNAStringSet(seqs), anchor=NA,verbose=FALSE)
+seqs <- getSequences(seqtabNoC)
+names(seqs) <- seqs # This propagates to the tip labels of the tree
+alignment <- AlignSeqs(DNAStringSet(seqs), anchor=NA,verbose=FALSE)
 ```
 
 ```{r}
-#phangAlign <- phyDat(as(alignment, "matrix"), type="DNA")
-#dm <- dist.ml(phangAlign)
-#treeNJ <- NJ(dm) # Note, tip order != sequence order
-#fit = pml(treeNJ, data=phangAlign)
-#fitGTR <- update(fit, k=4, inv=0.2)
-#fitGTR <- optim.pml(fitGTR, model="GTR", optInv=TRUE, optGamma=TRUE,
- #       rearrangement = "stochastic", control = pml.control(trace = 0))
-#detach("package:phangorn", unload=TRUE)
+phangAlign <- phyDat(as(alignment, "matrix"), type="DNA")
+dm <- dist.ml(phangAlign)
+treeNJ <- NJ(dm) # Note, tip order != sequence order
+fit = pml(treeNJ, data=phangAlign)
+fitGTR <- update(fit, k=4, inv=0.2)
+fitGTR <- optim.pml(fitGTR, model="GTR", optInv=TRUE, optGamma=TRUE,
+       rearrangement = "stochastic", control = pml.control(trace = 0))
+detach("package:phangorn", unload=TRUE)
 ```
 
 ## Combiner des données dans un objet phyloseq
@@ -195,11 +195,11 @@ keep.cols <- c("collection_date", "biome", "target_gene", "target_subfragment",
 ```
 
 ```{r}
-#ps <- phyloseq(otu_table(seqtabNoC, taxa_are_rows=FALSE), 
-#               sample_data(samdf), 
-#               tax_table(taxTab),phy_tree(fitGTR$tree))
-#ps <- prune_samples(sample_names(ps) != "Mock", ps) # Remove mock sample
-#ps
+ps <- phyloseq(otu_table(seqtabNoC, taxa_are_rows=FALSE), 
+               sample_data(samdf), 
+               tax_table(taxTab),phy_tree(fitGTR$tree))
+ps <- prune_samples(sample_names(ps) != "Mock", ps) # Remove mock sample
+ps
 ```
 
 ```{r}
